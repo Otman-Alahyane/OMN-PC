@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  html,body{margin:0;background:#050505;color:#F5F5F5;font-family:"DM Sans",system-ui,sans-serif}
+  html,body{margin:0;background:#050505;color:#0A0A0A;font-family:"DM Sans",system-ui,sans-serif}
   #sheet{display:flex;flex-wrap:wrap;gap:20px;padding:24px;justify-content:center}
   .thumb{width:324px;height:576px;overflow:hidden;border-radius:12px;border:1px solid #2a2a2a}
   .thumb>div{transform:scale(.3);transform-origin:top left}
@@ -15,144 +15,205 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
 <script type="text/babel">
+// Valeurs de démonstration (ligne 1). Le script render-slides.mjs les remplace par la ligne choisie du Google Sheets.
+// Les prix par composant (cpu_price, gpu_price...) sont optionnels : s'ils sont vides, la slide l'indique au lieu d'inventer un prix.
 const DEFAULT_CONFIG = {
-  title: "PC Gamer Entrée de gamme", price: 850, condition: "100% Neuf",
-  cpu: "AMD Ryzen 5 5500", gpu: "AMD Radeon RX 7600", ram: "16 Go DDR4 3200MHz White", storage: "SSD SATA 500 Go",
+  title: "PC Gamer Entrée de gamme", range: "Entrée de gamme", condition: "100% Neuf", price: 850,
+  cpu: "AMD Ryzen 5 5500", gpu: "NVIDIA RTX 5060", ram: "16 Go DDR4 3200MHz White", storage: "SSD SATA 500 Go",
   motherboard: "Gigabyte A520m k", psu: "Corsair 650W 80+ Bronze", case: "Boîtier Blanc ARGB",
   cooling: "Ventirad Blanc Thermalright", os: "Windows 11 Pro",
-  description: "Idéal pour débuter dans le gaming sur PC sans se ruiner.",
   image: "pc_entree_de_gamme.png", cta: "omnpc.netlify.app", accent: "#D91E29",
+  // Photos des composants (dossier images/) : cpu, gpu, ram, ssd/storage, cartemere/motherboard, alimentation/psu, boitier/case, ventirad/cooling, os
+  images: { cpu: "images/cpu.jpg", gpu: "images/gpu.jpg", ram: "images/ram.jpg", storage: "images/ssd.jpg", motherboard: "images/cartemere.jpg", psu: "images/alimentation.jpg", case: "images/boitier.jpg", cooling: "images/ventirad.jpg", os: "images/os.jpg" },
 };
 const C = { ...DEFAULT_CONFIG, ...(window.OMN_CONFIG || {}) };
-const TOTAL = 5;
+const TOTAL = 7;
 const DISPLAY = '"Bricolage Grotesque", system-ui, sans-serif';
 const BODY = '"DM Sans", system-ui, sans-serif';
 const H = { fontFamily: DISPLAY, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.05 };
-const LABELS = { cpu: "Processeur", gpu: "Carte graphique", ram: "Mémoire vive", storage: "Stockage", motherboard: "Carte mère", psu: "Alimentation", case: "Boîtier", cooling: "Refroidissement", os: "Système" };
 const Logo = ({ style }) => (<svg viewBox="0 0 870 801" style={style}><path fill="#D7272D" fillRule="evenodd" d="M870,136 860,140 782,203 781,423 773,418 628,212 623,213 504,392 494,384 405,251 399,249 312,380 311,483 202,549 88,483 88,310 197,244 204,244 313,307 359,235 203,142 197,142 1,259 1,532 195,648 203,649 398,532 400,402 405,403 501,545 505,545 622,368 629,365 858,680 870,690Z" />
-          <path fill="#8C8C8C" fillRule="evenodd" d="M756,615 751,613 751,599 728,567 715,561 712,546 681,505 674,504 674,575 669,581 456,709 449,709 318,629 249,666 244,676 445,799 455,801 756,621ZM531,48 459,5 448,3 253,120 253,126 320,167 334,166 448,99 490,116 530,56ZM679,0 607,2 586,11 569,29 560,55 560,85 451,243 451,250 486,301 493,300 610,125 649,117 673,96 682,67ZM616,35 640,41 648,57 645,77 628,89 606,88 594,68 597,49Z" />
+          <path fill="#6A6A66" fillRule="evenodd" d="M756,615 751,613 751,599 728,567 715,561 712,546 681,505 674,504 674,575 669,581 456,709 449,709 318,629 249,666 244,676 445,799 455,801 756,621ZM531,48 459,5 448,3 253,120 253,126 320,167 334,166 448,99 490,116 530,56ZM679,0 607,2 586,11 569,29 560,55 560,85 451,243 451,250 486,301 493,300 610,125 649,117 673,96 682,67ZM616,35 640,41 648,57 645,77 628,89 606,88 594,68 597,49Z" />
           <path fill="#F1373E" fillRule="evenodd" d="M323,452 313,465 314,482 351,502 352,452ZM4,265 5,376 14,382 36,382 43,361 44,289 34,278ZM825,233 793,209 783,210 781,423 771,417 629,216 619,220 504,392 495,386 406,254 395,256 318,371 317,381 354,393 403,329 492,454 506,459 618,298 629,293 738,439 781,443 820,438 825,429ZM311,212 305,203 194,144 194,144 48,233 48,240 83,256 202,193 309,252Z" />
           <path fill="#AD1B27" fillRule="evenodd" d="M868,310 857,307 837,312 828,325 826,548 820,552 629,295 619,299 504,466 496,463 409,335 399,332 355,400 354,507 205,597 175,586 49,508 8,527 7,535 190,645 203,648 395,533 400,402 408,407 497,539 506,541 622,368 629,365 858,680 869,684ZM355,233 315,212 313,249 305,255 206,196 196,195 53,279 45,289 46,500 54,502 88,479 91,307 197,244 312,305 356,243Z" />
           <path fill="#F2F2F2" fillRule="evenodd" d="M713,551 688,514 675,509 674,575 669,581 456,709 449,709 319,630 288,643 284,653 443,751 455,754 706,604 713,595ZM529,50 464,8 448,4 260,116 256,126 281,143 292,144 447,51 456,51 512,80 528,59ZM671,1 608,2 575,21 562,45 560,85 453,240 453,252 464,268 474,267 597,90 594,57 599,46 616,35 642,38 672,9Z" /></svg>);
 
+const MAIN = [["cpu", "Processeur", "CPU"], ["gpu", "Carte graphique", "GPU"], ["ram", "Mémoire vive", "RAM"], ["storage", "Stockage", "SSD"]];
+const ALL = [...MAIN, ["motherboard", "Carte mère"], ["psu", "Alimentation"], ["case", "Boîtier"], ["cooling", "Refroidissement"], ["os", "Système"]];
+const priceOf = (k) => { const v = C[k + "_price"]; return v === "" || v == null || !isFinite(Number(v)) ? null : Number(v); };
+const eur = (n) => Math.round(n) + "€";
+const owned = ALL.filter(([k]) => C[k]);
+const complete = owned.length > 0 && owned.every(([k]) => priceOf(k) != null);
+const total = complete ? owned.reduce((s, [k]) => s + priceOf(k), 0) : Number(C.price);
+const coverTitle = (C.title || "").replace(/^PC Gamer\s*/i, "");
+
+const ICONS = {
+  cpu: <><rect x="6" y="6" width="12" height="12" rx="2" /><rect x="9.5" y="9.5" width="5" height="5" /><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4" /></>,
+  gpu: <><rect x="2" y="6" width="20" height="10" rx="2" /><circle cx="9" cy="11" r="3" /><circle cx="16" cy="11" r="1.6" /><path d="M5 19h14" /></>,
+  ram: <><rect x="2" y="7" width="20" height="9" rx="1.5" /><path d="M6 10.5v2M10 10.5v2M14 10.5v2M18 10.5v2M5 16v3M9 16v3M13 16v3M17 16v3" /></>,
+  storage: <><rect x="3" y="5" width="18" height="14" rx="2.5" /><circle cx="7.5" cy="9.5" r="1" /><path d="M12 15h6" /></>,
+};
+
 function Frame({ i, children }) {
   return (
-    <div style={{ position: "relative", width: 1080, height: 1920, overflow: "hidden", background: "#0A0A0A", color: "#F5F5F5", fontFamily: BODY, "--red": C.accent }}>
-      <div style={{ position: "absolute", inset: 0, backgroundSize: "40px 40px", backgroundImage: "radial-gradient(circle, rgba(255,255,255,.09) 1.5px, transparent 2px)" }} />
-      <div style={{ position: "absolute", left: 300, top: 900, width: 1200, height: 1200, borderRadius: "50%", background: "radial-gradient(circle, color-mix(in srgb, var(--red) 14%, transparent), transparent 65%)" }} />
+    <div style={{ position: "relative", width: 1080, height: 1920, overflow: "hidden", isolation: "isolate", background: "#E9E9E7", color: "#0A0A0A", fontFamily: BODY, "--red": C.accent }}>
+      <div style={{ position: "absolute", inset: 0, backgroundSize: "40px 40px", backgroundImage: "radial-gradient(circle, rgba(0,0,0,.12) 1.5px, transparent 2px)" }} />
+      <div style={{ position: "absolute", left: 240, top: 700, width: 1300, height: 1300, borderRadius: "50%", background: "radial-gradient(circle, color-mix(in srgb, var(--red) 16%, transparent), transparent 65%)" }} />
       {children}
       <div style={{ position: "absolute", left: 60, top: 120, width: 960, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <Logo style={{ height: 64, width: "auto" }} />
           <span style={{ ...H, fontSize: 36, fontWeight: 700 }}>OMN PC</span>
         </div>
-        <span style={{ fontSize: 30, fontWeight: 500, color: "#8C8C8C" }}>{i + 1} / {TOTAL}</span>
+        <span style={{ fontSize: 30, fontWeight: 500, color: "#6A6A66" }}>{i + 1} / {TOTAL}</span>
       </div>
-      <div style={{ position: "absolute", left: 60, top: 210, width: 960, height: 1, background: "#2A2A2A" }}>
+      <div style={{ position: "absolute", left: 60, top: 210, width: 960, height: 1, background: "#CBCBC7" }}>
         <div style={{ position: "absolute", top: -1, left: (960 / TOTAL) * i, width: 960 / TOTAL, height: 3, background: "var(--red)" }} />
       </div>
     </div>
   );
 }
 
-// Anneaux concentriques fins + un arc rouge
 const Rings = ({ cx, cy, r, arc = 420, rot = -40 }) => (
   <svg width="1080" height="1920" style={{ position: "absolute", left: 0, top: 0 }}>
-    {r.map((v) => <circle key={v} cx={cx} cy={cy} r={v} fill="none" stroke="rgba(255,255,255,.09)" strokeWidth="1.5" />)}
+    {r.map((v) => <circle key={v} cx={cx} cy={cy} r={v} fill="none" stroke="rgba(0,0,0,.14)" strokeWidth="1.5" />)}
     <circle cx={cx} cy={cy} r={r[1]} fill="none" stroke="var(--red)" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${arc} 9999`} transform={`rotate(${rot} ${cx} ${cy})`} />
   </svg>
 );
 
+// Photo du PC, ou silhouette filaire si la ligne n'a pas d'image
 const PC = ({ left, top, w }) => (
   <div style={{ position: "absolute", left, top, width: w }}>
-    <img src={C.image} alt="" style={{ position: "relative", width: "100%", display: "block", filter: "drop-shadow(0 40px 60px rgba(0,0,0,.65))" }} />
+    <div style={{ position: "absolute", inset: "-4% -22%", background: "radial-gradient(closest-side, rgba(0,0,0,.20), transparent)" }} />
+    {C.image ? (
+      <img src={C.image} alt="" style={{ position: "relative", width: "100%", display: "block", filter: "drop-shadow(0 36px 40px rgba(0,0,0,.30))" }} />
+    ) : (
+      <svg viewBox="0 0 300 400" style={{ width: "100%", display: "block" }} fill="none" strokeWidth="1.6">
+        <rect x="40" y="10" width="220" height="380" rx="18" stroke="#9A9A96" />
+        <rect x="56" y="26" width="188" height="348" rx="10" stroke="#CBCBC7" />
+        <circle cx="150" cy="110" r="58" stroke="var(--red)" /><circle cx="150" cy="110" r="12" stroke="var(--red)" />
+        <rect x="72" y="226" width="156" height="36" rx="6" stroke="#8A8A86" />
+        <circle cx="112" cy="330" r="28" stroke="#9A9A96" /><circle cx="188" cy="330" r="28" stroke="#9A9A96" />
+      </svg>
+    )}
   </div>
 );
 
-// Fenêtre HUD : zoom sur une zone de la photo, avec angles rouges
-const Crop = ({ x, y, w, top, h }) => {
-  const s = 960 / w;
-  const corner = (st) => <div style={{ position: "absolute", width: 40, height: 40, borderColor: "var(--red)", borderStyle: "solid", borderWidth: 0, ...st }} />;
+// Photo du composant (fond blanc des PNG neutralisé par "multiply"), sinon icône filaire
+const Visual = ({ k }) => {
+  const [bad, setBad] = React.useState(false);
+  const src = (C.images || {})[k];
+  if (!src || bad) {
+    return (
+      <div style={{ position: "absolute", left: 390, top: 450, width: 300, height: 300, color: "var(--red)" }}>
+        <svg viewBox="0 0 24 24" width="300" height="300" fill="none" stroke="currentColor" strokeWidth="0.45" strokeLinecap="round" strokeLinejoin="round">{ICONS[k]}</svg>
+      </div>
+    );
+  }
+  return <img src={src} alt="" onError={() => setBad(true)} style={{ position: "absolute", left: 250, top: 380, width: 580, height: 440, objectFit: "contain", mixBlendMode: "multiply" }} />;
+};
+const Thumb = ({ k }) => {
+  const [bad, setBad] = React.useState(false);
+  const src = (C.images || {})[k];
   return (
-    <div style={{ position: "absolute", left: 60, top, width: 960, height: h, overflow: "hidden" }}>
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(closest-side at 45% 50%, color-mix(in srgb, var(--red) 26%, transparent), transparent)" }} />
-      <img src={C.image} alt="" style={{ position: "absolute", left: -x * s, top: -y * s, width: 1140 * s, filter: "drop-shadow(0 30px 40px rgba(0,0,0,.5))" }} />
-      {corner({ top: 0, left: 0, borderTopWidth: 3, borderLeftWidth: 3 })}
-      {corner({ top: 0, right: 0, borderTopWidth: 3, borderRightWidth: 3 })}
-      {corner({ bottom: 0, left: 0, borderBottomWidth: 3, borderLeftWidth: 3 })}
-      {corner({ bottom: 0, right: 0, borderBottomWidth: 3, borderRightWidth: 3 })}
+    <div style={{ width: 84, height: 84, flex: "none", display: "grid", placeItems: "center" }}>
+      {src && !bad
+        ? <img src={src} alt="" onError={() => setBad(true)} style={{ width: 84, height: 84, objectFit: "contain", mixBlendMode: "multiply" }} />
+        : <div style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--red)" }} />}
     </div>
   );
 };
-
-// Ligne de fiche technique : filet fin, repère rouge, valeur en grand
-const Spec = ({ k, top, h, size }) => (
-  <div style={{ position: "absolute", left: 60, top, width: 960, height: h, borderTop: "1px solid #2A2A2A", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-    <div style={{ position: "absolute", left: 0, top: -2, width: 44, height: 3, background: "var(--red)" }} />
-    <div style={{ fontSize: 26, fontWeight: 500, color: "#8C8C8C", marginBottom: 6 }}>{LABELS[k]}</div>
-    <div style={{ ...H, fontSize: size, fontWeight: 700, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>{C[k]}</div>
-  </div>
+const Pill = ({ children, solid }) => (
+  <span style={{ display: "inline-block", fontWeight: 700, fontSize: 30, padding: "8px 26px", borderRadius: 999, border: "2px solid var(--red)", background: solid ? "var(--red)" : "transparent", color: solid ? "#fff" : "inherit", whiteSpace: "nowrap" }}>{children}</span>
 );
+const Tick = () => <div style={{ position: "absolute", left: 0, top: -2, width: 44, height: 3, background: "var(--red)" }} />;
 
-const Pill = ({ children }) => (
-  <span style={{ display: "inline-block", fontWeight: 700, fontSize: 30, padding: "8px 26px", borderRadius: 999, border: "2px solid var(--red)", whiteSpace: "nowrap" }}>{children}</span>
-);
+const Component = (idx) => (i) => {
+  const [k, label] = MAIN[idx];
+  const p = priceOf(k);
+  return (
+    <Frame i={i}>
+      <Rings cx={540} cy={600} r={[190, 360, 560]} arc={470} rot={[-40, 20, 110, 200][idx]} />
+      <Visual k={k} />
+      <div style={{ position: "absolute", left: 0, top: 985, width: 1080, textAlign: "center", fontSize: 40, fontWeight: 500, color: "#6A6A66" }}>{label}</div>
+      <div style={{ ...H, position: "absolute", left: 0, top: 1045, width: 1080, boxSizing: "border-box", padding: "0 60px", textAlign: "center", fontSize: 104, lineHeight: 1.04, letterSpacing: "-0.04em" }}>{C[k]}</div>
+      <div style={{ position: "absolute", left: 60, top: 1320, width: 960, height: 130, borderTop: "1px solid #CBCBC7", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Tick />
+        {p != null ? (
+          <><span style={{ fontSize: 32, fontWeight: 500, color: "#6A6A66" }}>Prix du composant</span><span style={{ ...H, fontSize: 130, letterSpacing: "-0.05em" }}>{eur(p)}</span></>
+        ) : (
+          <span style={{ fontSize: 38, fontWeight: 500, color: "#3A3A3A" }}>Prix à jour sur {C.cta}</span>
+        )}
+      </div>
+      <div style={{ position: "absolute", left: 60, top: 1490, width: 960, display: "flex", justifyContent: "space-between" }}>
+        {MAIN.map(([kk, , short], n) => (
+          <div key={kk} style={{ flex: 1, borderTop: n === idx ? "3px solid var(--red)" : "1px solid #CBCBC7", paddingTop: 14, marginRight: n < 3 ? 14 : 0, fontSize: 30, fontWeight: 700, color: n === idx ? "#0A0A0A" : "#A6A6A2" }}>{short}</div>
+        ))}
+      </div>
+    </Frame>
+  );
+};
 
 const SLIDES = [
-  // 1. Accroche : prix géant, anneaux, PC qui déborde de l'écran
+  // 1. Couverture
+  (i) => {
+    const n = String(Math.round(total)).length;
+    return (
+      <Frame i={i}>
+        <Rings cx={640} cy={1330} r={[300, 500, 720]} arc={540} />
+        <PC left={260} top={900} w={760} />
+        <div style={{ position: "absolute", left: 60, top: 262, display: "flex", gap: 14 }}>
+          <Pill solid>PC Gamer</Pill>{C.range && <Pill>{C.range}</Pill>}
+        </div>
+        <div style={{ ...H, position: "absolute", left: 60, top: 345, width: 960, fontSize: 62, fontWeight: 600, color: "#2A2A2A", lineHeight: 1.1 }}>{coverTitle}</div>
+        <div style={{ ...H, position: "absolute", left: 44, top: 525, fontSize: n >= 4 ? 340 : 420, lineHeight: 0.9, letterSpacing: "-0.06em", whiteSpace: "nowrap" }}>
+          {Math.round(total)}<span style={{ fontSize: n >= 4 ? 170 : 220, color: "var(--red)", position: "relative", top: n >= 4 ? -70 : -90, marginLeft: 10, letterSpacing: 0 }}>€</span>
+        </div>
+      </Frame>
+    );
+  },
+  // 2 à 5. Un composant par slide
+  Component(0), Component(1), Component(2), Component(3),
+  // 6. Récapitulatif
+  (i) => {
+    const rh = Math.min(104, 900 / owned.length);
+    const hasThumbs = owned.some(([k]) => (C.images || {})[k]);
+    return (
+      <Frame i={i}>
+        <div style={{ ...H, position: "absolute", left: 60, top: 252, fontSize: 72 }}>Récap de la config</div>
+        {owned.map(([k, label], n) => {
+          const p = priceOf(k);
+          return (
+            <div key={k} style={{ position: "absolute", left: 60, top: 350 + n * rh, width: 960, height: rh, borderTop: "1px solid #CBCBC7", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+                {hasThumbs && <Thumb k={k} />}
+                <div>
+                  <div style={{ fontSize: 22, fontWeight: 500, color: "#6A6A66" }}>{label}</div>
+                  <div style={{ ...H, fontSize: 38, fontWeight: 700, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>{C[k]}</div>
+                </div>
+              </div>
+              <div style={{ ...H, fontSize: 38, fontWeight: 700, color: p != null ? "#0A0A0A" : "#A6A6A2" }}>{p != null ? eur(p) : "–"}</div>
+            </div>
+          );
+        })}
+        <div style={{ position: "absolute", left: 60, top: 350 + owned.length * rh + 24, width: 960, height: 170, borderTop: "1px solid #CBCBC7", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Tick />
+          <span style={{ ...H, fontSize: 56, fontWeight: 700 }}>Total</span>
+          <span style={{ ...H, fontSize: 150, letterSpacing: "-0.05em" }}>{eur(total)}</span>
+        </div>
+      </Frame>
+    );
+  },
+  // 7. Appel à l'action
   (i) => (
     <Frame i={i}>
-      <Rings cx={640} cy={1230} r={[330, 540, 760]} arc={560} />
-      <PC left={150} top={690} w={820} />
-      <div style={{ position: "absolute", left: 60, top: 262, width: 960, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ ...H, fontSize: 50, fontWeight: 500, color: "#D8D8D8" }}>{C.title}</span>
+      <Rings cx={540} cy={700} r={[200, 390, 600]} arc={460} rot={-100} />
+      <div style={{ position: "absolute", left: 0, top: 570, width: 1080, display: "flex", justifyContent: "center" }}>
+        <Logo style={{ height: 260, width: "auto" }} />
       </div>
-      <div style={{ ...H, position: "absolute", left: 44, top: 340, fontSize: 430, lineHeight: 0.9, letterSpacing: "-0.06em", whiteSpace: "nowrap" }}>
-        {C.price}<span style={{ fontSize: 220, color: "var(--red)", position: "relative", top: -90, marginLeft: 12, letterSpacing: 0 }}>€</span>
+      <div style={{ ...H, position: "absolute", left: 0, top: 1070, width: 1080, boxSizing: "border-box", padding: "0 80px", textAlign: "center", fontSize: 66, fontWeight: 700, lineHeight: 1.1 }}>Retrouve tous les liens directs et prix à jour en bio !</div>
+      <div style={{ position: "absolute", left: 0, top: 1340, width: 1080, display: "flex", justifyContent: "center" }}>
+        <div style={{ ...H, fontSize: 82, padding: "24px 52px", borderRadius: 999, background: "var(--red)", color: "#fff" }}>{C.cta}</div>
       </div>
-      <div style={{ position: "absolute", left: 60, top: 740 }}><Pill>{C.condition}</Pill></div>
-    </Frame>
-  ),
-  // 2. Le coeur : zoom sur le ventirad + 4 lignes
-  (i) => (
-    <Frame i={i}>
-      <div style={{ ...H, position: "absolute", left: 60, top: 252, fontSize: 72 }}>Le cœur de la config</div>
-      <Crop x={40} y={380} w={640} top={360} h={540} />
-      {["cpu", "gpu", "ram", "storage"].map((k, n) => <Spec key={k} k={k} top={950 + n * 150} h={150} size={62} />)}
-    </Frame>
-  ),
-  // 3. Le reste : zoom sur la carte graphique + 5 lignes
-  (i) => (
-    <Frame i={i}>
-      <div style={{ ...H, position: "absolute", left: 60, top: 252, fontSize: 72 }}>Et tout le reste</div>
-      <Crop x={40} y={800} w={640} top={360} h={440} />
-      {["motherboard", "psu", "case", "cooling", "os"].map((k, n) => <Spec key={k} k={k} top={850 + n * 130} h={130} size={50} />)}
-    </Frame>
-  ),
-  // 4. Verdict : grande typo + PC en bas qui déborde
-  (i) => (
-    <Frame i={i}>
-      <PC left={330} top={1020} w={820} />
-      <div style={{ ...H, position: "absolute", left: 60, top: 290, width: 960, fontSize: 112, fontWeight: 700, lineHeight: 1.06, letterSpacing: "-0.04em" }}>{C.description}</div>
-      <div style={{ position: "absolute", left: 60, top: 1300, width: 330, borderTop: "1px solid #2A2A2A", paddingTop: 20 }}>
-        <div style={{ position: "absolute", left: 0, top: -2, width: 44, height: 3, background: "var(--red)" }} />
-        <div style={{ fontSize: 26, fontWeight: 500, color: "#8C8C8C" }}>La config complète</div>
-        <div style={{ ...H, fontSize: 130, letterSpacing: "-0.05em" }}>{C.price}€</div>
-      </div>
-    </Frame>
-  ),
-  // 5. Appel à l'action : logo au centre des anneaux
-  (i) => (
-    <Frame i={i}>
-      <Rings cx={540} cy={760} r={[210, 400, 600]} arc={460} rot={-100} />
-      <div style={{ position: "absolute", left: 0, top: 640, width: 1080, display: "flex", justifyContent: "center" }}>
-        <Logo style={{ height: 240, width: "auto" }} />
-      </div>
-      <div style={{ ...H, position: "absolute", left: 0, top: 1140, width: 1080, textAlign: "center", fontSize: 62, fontWeight: 500, color: "#D8D8D8" }}>Retrouve tous les liens sur</div>
-      <div style={{ position: "absolute", left: 0, top: 1250, width: 1080, display: "flex", justifyContent: "center" }}>
-        <div style={{ ...H, fontSize: 86, padding: "24px 52px", borderRadius: 999, background: "var(--red)" }}>{C.cta}</div>
-      </div>
-      <div style={{ position: "absolute", left: 0, top: 1430, width: 1080, textAlign: "center", fontSize: 36, fontWeight: 500, color: "#8C8C8C" }}>{C.title}, {C.price}€</div>
     </Frame>
   ),
 ];
@@ -170,8 +231,8 @@ const FONTS = ['800 100px "Bricolage Grotesque"', '700 40px "Bricolage Grotesque
 window.ready = (async () => {
   show(RENDER ? 0 : null);
   await Promise.all(FONTS.map((f) => document.fonts.load(f)));
-  await new Promise((r) => { const im = new Image(); im.onload = im.onerror = r; im.src = C.image; });
+  await Promise.all([C.image, ...Object.values(C.images || {})].filter(Boolean).map((u) => new Promise((r) => { const im = new Image(); im.onload = im.onerror = r; im.src = u; })));
 })();
-window.renderSlide = async (n) => { await window.ready; show(n); await new Promise((r) => requestAnimationFrame(() => r())); };
+window.renderSlide = async (n) => { await window.ready; show(n); await new Promise((r) => requestAnimationFrame(() => r())); await Promise.all([...document.images].map((im) => im.decode().catch(() => {}))); };
 window.SLIDE_COUNT = TOTAL;
 </script></body></html>
