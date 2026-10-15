@@ -1,0 +1,24 @@
+{
+  "name": "omn-pc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Otman-Alahyane/OMN-PC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Otman-Alahyane/OMN-PC/issues"
+  },
+  "homepage": "https://github.com/Otman-Alahyane/OMN-PC#readme",
+  "dependencies": {
+    "puppeteer": "^25.14.0"
+  }
+}
